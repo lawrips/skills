@@ -1,12 +1,12 @@
 {
-  "name": "docker-dev-setup",
-  "description": "Claude Code skills",
+  "name": "skills",
+  "description": "Claude Code skills and agents",
   "version": "1.0.0",
   "author": {
     "name": "lawrips"
   },
-  "homepage": "https://basato.dev",
-  "repository": "https://github.com/lawrips/basato-skills",
+  "homepage": "https://github.com/lawrips/skills",
+  "repository": "https://github.com/lawrips/skills",
   "license": "MIT",
   "keywords": ["skills", "docker", "dev-environment"]
 }

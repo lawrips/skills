@@ -1,30 +1,31 @@
-# Basato Skills
+# Skills
 
-🧪 Personal Claude skill collection - sharing what has worked for me. Use at own risk.
+Personal Claude Code skills and agents collection - sharing what has worked for me. Use at own risk.
 
 ## Installation
 
 ```bash
-/plugin marketplace add lawrips/basato-skills
-/plugin install docker-dev-setup@basato-skills
+/plugin marketplace add lawrips/skills
+/plugin install skills@lawrips
 ```
 
-## Available Skills
+## Skills
 
-### docker-dev-setup
+| Skill | Description |
+|-------|-------------|
+| **brainstorming** | Turn ideas into designs through step-by-step Q&A |
+| **investigate** | Debugging methodology that prevents speculation and enforces disciplined investigation |
+| **create-tickets** | Convert designs into tk epics and tasks |
+| **commit-and-close** | Commit code, update ticket with commit id, close ticket |
+| **css-architecture** | CSS token system and semantic styling patterns |
+| **docker-dev-setup** | Isolated Docker dev environment with security hardening |
 
-Set up isolated Docker dev environment for web projects with optional dynamic port detection. 
+## Agents
 
-**Tested on:** I've had good success with it working on my own macOS + Node.js (patterns should adapt to other stacks)
-
-**Features:**
-- Non-root container user
-- Basic security hardening (dropped capabilities, no privilege escalation)
-- Hot reload via volume mounts
-- Secret management support (Doppler, .env, direnv)
-- VS Code launch.json integration
-
-**Usage:** Just ask Claude to set up Docker for your dev environment, or run `/docker-dev-setup`.
+| Agent | Description |
+|-------|-------------|
+| **surgical-coder** | Implements features and fixes with surgical precision, matching existing patterns |
+| **plan-reviewer** | Validates implementation plans against the actual codebase before coding begins |
 
 ## License
 

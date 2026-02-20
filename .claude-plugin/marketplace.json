@@ -1,5 +1,5 @@
 {
-  "name": "basato-skills",
+  "name": "lawrips",
   "owner": {
     "name": "lawrips"
   },
@@ -9,9 +9,9 @@
   },
   "plugins": [
     {
-      "name": "docker-dev-setup",
+      "name": "skills",
       "source": "./",
-      "description": "Set up isolated Docker dev environment for web projects",
+      "description": "Personal Claude Code skills collection",
       "version": "1.0.0"
     }
   ]
