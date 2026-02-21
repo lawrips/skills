@@ -1,6 +1,7 @@
 ---
 name: brainstorming
 description: "Customer centric design refinement through step by step Q&A to help explore intent, express ideas, and identify solutions for user problems"
+disable-model-invocation: true
 ---
 
 # Brainstorming Ideas Into Designs

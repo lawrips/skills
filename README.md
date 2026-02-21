@@ -9,6 +9,10 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 /plugin install skills@lawrips
 ```
 
+## Prerequisites
+
+Some skills (`create-tickets`, `commit-and-close`) require [tk](https://github.com/lawrips/ticket), a ticket management CLI.
+
 ## Skills
 
 | Skill | Description |
@@ -30,3 +34,8 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 ## License
 
 MIT
+
+## Inspiration 
+
+Thank you to obra, pprice, smacbeth, wedow
+

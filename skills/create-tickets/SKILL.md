@@ -1,6 +1,7 @@
 ---
 name: create-tickets
 description: Convert ideas into tk epics and /or tasks for implementation
+disable-model-invocation: true
 ---
 
 # Creating Tickets
@@ -58,9 +59,7 @@ tk ready                   # confirm unblocked work
 
 ## Finalize
 
-Tickets should be closed after implementation and only when verified and confirmed by the user. Commit ids shoudl be written to the ticket info for easier tracking
-
-/commit-and-close details this flow
+Tickets should be closed after implementation and only when verified and confirmed by the user. See `/skills:commit-and-close` for this flow.
 
 ## Standalone Task
 

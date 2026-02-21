@@ -1,6 +1,7 @@
 ---
 name: commit-and-close
 description: Commit code, update ticket with commit id, close ticket
+disable-model-invocation: true
 ---
 
 # Commit and Close
@@ -43,4 +44,5 @@ tk show <ticket-id>
 
 - Do NOT close tickets unless the user has verified the implementation
 - Do NOT skip adding the commit reference — it's the traceability link
+- Do NOT chain git commands together (add, commit or  push). One command for each step
 - If there's a parent epic, check if all child tasks are now closed. If so, ask the user if the epic should be closed too

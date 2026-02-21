@@ -1,6 +1,7 @@
 ---
 name: docker-dev-setup
 description: Set up isolated Docker dev environment for web projects. Use when asked to add Docker, containerize development, or improve dev security.
+disable-model-invocation: true
 ---
 
 # Docker Dev Environment Setup

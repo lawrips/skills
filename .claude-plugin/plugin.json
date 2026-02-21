@@ -8,5 +8,5 @@
   "homepage": "https://github.com/lawrips/skills",
   "repository": "https://github.com/lawrips/skills",
   "license": "MIT",
-  "keywords": ["skills", "docker", "dev-environment"]
+  "keywords": ["skills", "agents", "debugging", "productivity"]
 }
