@@ -30,6 +30,54 @@ Some skills (`create-tickets`, `commit-and-close`) require [tk](https://github.c
 |-------|-------------|
 | **surgical-coder** | Implements features and fixes with surgical precision, matching existing patterns |
 | **plan-reviewer** | Validates implementation plans against the actual codebase before coding begins |
+| **code-reviewer** | Reviews code changes against ticket requirements and codebase conventions |
+
+## Workflow
+
+Skills and agents split into two categories: **process** (the steps you follow) and **deliberate** (tools you reach for when needed).
+
+### Process — feature lifecycle
+
+For large items like epics I do something similar to the following flow.
+
+```
+          ┌──────────────────┐
+  skill   │  brainstorming   │
+          └────────┬─────────┘
+                   │ design
+                   ▼
+          ┌──────────────────┐
+  skill   │  create-tickets  │
+          └────────┬─────────┘
+                   │ tickets
+                   ▼
+          ┌──────────────────┐
+  agent   │  plan-reviewer   │
+          └────────┬─────────┘
+                   │ ticket notes
+                   ▼
+          ┌──────────────────┐
+  agent   │  surgical-coder  │
+          └────────┬─────────┘
+                   │ code
+                   ▼
+          ┌──────────────────┐
+  agent   │  code-reviewer   │
+          └────────┬─────────┘
+                   │ review notes
+                   ▼
+          ┌──────────────────┐
+  skill   │ commit-and-close │
+          └──────────────────┘
+```
+
+### Deliberate — reach for when needed
+
+| Skill/Agent | When |
+|-------------|------|
+| **investigate** | Debugging a bug — load it to reset Claude's approach |
+| **css-architecture** | Major styling work — load conventions for the session |
+| **docker-dev-setup** | Setting up containerized dev environment from scratch |
 
 ## License
 
