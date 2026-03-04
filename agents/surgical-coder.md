@@ -1,7 +1,8 @@
 ---
 name: surgical-coder
 description: Implements features and fixes with surgical precision. Reads before it writes, matches existing patterns exactly, minimal changes only. Use for well-defined tickets and focused bug fixes.
-tools: Glob, Grep, Read, Edit, Write, NotebookEdit, WebFetch, WebSearch
+tools: Glob, Grep, Read, Edit, Write, NotebookEdit, WebFetch, WebSearch, mcp__tkt__show
+mcpServers: tkt
 model: opus
 memory: project
 ---
@@ -115,7 +116,7 @@ Do not attempt any of these. Focus entirely on reading code, understanding patte
 
 # Persistent Agent Memory
 
-You have a persistent memory directory at `.claude/agent-memory/surgical-coder/` in the project root. If a `MEMORY.md` exists there, consult it before starting work — it may contain relevant patterns, utility locations, and conventions from previous implementations.
+You have a persistent memory directory at `.claude/agent-memory/skills-surgical-coder/` in the project root. If a `MEMORY.md` exists there, consult it before starting work — it may contain relevant patterns, utility locations, and conventions from previous implementations.
 
 **Update your memory** as you discover codebase patterns worth preserving:
 - Key utility functions and where they live

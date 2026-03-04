@@ -1,18 +1,18 @@
 ---
 name: create-tickets
-description: Convert ideas into tk epics and /or tasks for implementation
+description: Convert ideas into tkt epics and /or tasks for implementation
 disable-model-invocation: true
 ---
 
 # Creating Tickets
 
-Convert designs into actionable tickets using tk's native fields.
-Note: **Use friendly file names for tickets.** When creating tickets, use `--id` to set a descriptive kebab-case name: `tk create "Title" --id c-network-retry-duplicates`. Much easier to scan and find than auto-generated IDs like `c-4c1b`.
+Convert designs into actionable tickets using tkt's native fields.
+Note: **Use friendly file names for tickets.** When creating tickets, use `--id` to set a descriptive kebab-case name: `tkt create "Title" --id c-network-retry-duplicates`. Much easier to scan and find than auto-generated IDs like `c-4c1b`.
 
 
 ## Prerequisites
 
-Verify `tk` is installed. If unavailable, stop and tell the user to install it.
+Verify `tkt` is installed. If unavailable, stop and tell the user to install it.
 
 ## Assess Scope
 
@@ -22,7 +22,7 @@ Verify `tk` is installed. If unavailable, stop and tell the user to install it.
 ## Creating an Epic
 
 ```bash
-tk create "Feature Name" \
+tkt create "Feature Name" \
   --id "Friendly name e.g. c-network-retry" \
   --type epic \
   -d "High-level goal" \
@@ -33,7 +33,7 @@ tk create "Feature Name" \
 ### Creating Tasks
 
 ```bash
-tk create "Task title" \
+tkt create "Task title" \
   --parent <epic-id> \
   --id "Friendly name e.g. c-check-websocket-connection" \
   -d "What to accomplish" \
@@ -53,20 +53,20 @@ Approach: specific implementation details" \
 ## After Creating
 
 ```bash
-tk ls --parent <epic-id>  # show created tasks
-tk ready                   # confirm unblocked work
+tkt ls --parent <epic-id>  # show created tasks
+tkt ready                   # confirm unblocked work
 ```
 
 ## Finalize
 
-Tickets should be closed after implementation and only when verified and confirmed by the user. See `/skills:commit-and-close` for this flow.
+Tickets should be closed after implementation and only when verified and confirmed by the user. Use `tkt workflow` for this flow.
 
 ## Standalone Task
 
 For small features without an epic:
 
 ```bash
-tk create "Task title" \
+tkt create "Task title" \
   --id "Friendly name e.g. c-network-retry" \
   -d "What to accomplish" \
   --design "Files and approach" \
