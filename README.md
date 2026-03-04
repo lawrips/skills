@@ -11,7 +11,9 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 
 ## Prerequisites
 
-Some skills (`create-tickets`, `commit-and-close`) require [tk](https://github.com/lawrips/ticket), a ticket management CLI.
+Several skills and agents are tightly integrated with [tkt](https://github.com/lawrips/tkt), a ticket management CLI. They won't work as expected without it:
+- **Skills:** `create-tickets`
+- **Agents:** `plan-reviewer`, `code-reviewer`
 
 ## Skills
 
@@ -19,8 +21,7 @@ Some skills (`create-tickets`, `commit-and-close`) require [tk](https://github.c
 |-------|-------------|
 | **brainstorming** | Turn ideas into designs through step-by-step Q&A |
 | **investigate** | Debugging methodology that prevents speculation and enforces disciplined investigation |
-| **create-tickets** | Convert designs into tk epics and tasks |
-| **commit-and-close** | Commit code, update ticket with commit id, close ticket |
+| **create-tickets** | Convert designs into tkt epics and tasks |
 | **css-architecture** | CSS token system and semantic styling patterns |
 | **docker-dev-setup** | Isolated Docker dev environment with security hardening |
 
@@ -67,7 +68,7 @@ For large items like epics I do something similar to the following flow.
                    │ review notes
                    ▼
           ┌──────────────────┐
-  skill   │ commit-and-close │
+    tkt   │ commit & close   │
           └──────────────────┘
 ```
 
