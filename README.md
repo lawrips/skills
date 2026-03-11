@@ -11,9 +11,11 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 
 ## Prerequisites
 
-Several skills and agents are tightly integrated with [tkt](https://github.com/lawrips/tkt), a ticket management CLI. They won't work as expected without it:
+**[tkt](https://github.com/lawrips/tkt)** — ticket management CLI. Several skills and agents are tightly integrated with tkt and won't work as expected without it:
 - **Skills:** `create-tickets`
 - **Agents:** `plan-reviewer`, `code-reviewer`
+
+**[Claude Code LSP](https://docs.anthropic.com/en/docs/claude-code/lsp)** (recommended) — all agents prefer LSP over Grep/Read for code navigation. Not required, but install language servers for your project's languages for faster, more precise code exploration. Agents fall back to Grep/Glob automatically.
 
 ## Skills
 
@@ -32,6 +34,7 @@ Several skills and agents are tightly integrated with [tkt](https://github.com/l
 | **surgical-coder** | Implements features and fixes with surgical precision, matching existing patterns |
 | **plan-reviewer** | Validates implementation plans against the actual codebase before coding begins |
 | **code-reviewer** | Reviews code changes against ticket requirements and codebase conventions |
+| **fast-explorer** | LSP-first codebase explorer — finds definitions, references, and structure fast |
 
 ## Workflow
 

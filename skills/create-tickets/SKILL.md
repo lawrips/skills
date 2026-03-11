@@ -1,7 +1,11 @@
 ---
 name: create-tickets
-description: Convert ideas into tkt epics and /or tasks for implementation
+description: Convert designs into tkt epics and tasks for implementation. Use when user wants to break down a design into tickets, create an epic, or plan implementation tasks.
 disable-model-invocation: true
+compatibility: Requires tkt CLI (https://github.com/lawrips/tkt). Claude Code only.
+metadata:
+  author: lawrips
+  version: 1.2.0
 ---
 
 # Creating Tickets
@@ -60,6 +64,12 @@ tkt ready                   # confirm unblocked work
 ## Finalize
 
 Tickets should be closed after implementation and only when verified and confirmed by the user. Use `tkt workflow` for this flow.
+
+## Troubleshooting
+
+- **Duplicate ID** — If `tkt create` fails with a duplicate, check `tkt show <id>` to see if the ticket already exists. Append a suffix or choose a different name.
+- **Parent not found** — Verify the parent exists with `tkt show <parent-id>` before creating children.
+- **MCP tools unavailable** — Fall back to bash `tkt` commands directly.
 
 ## Standalone Task
 

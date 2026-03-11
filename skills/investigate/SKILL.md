@@ -2,6 +2,9 @@
 name: investigate
 description: Debugging methodology that prevents speculation and enforces disciplined investigation. Use when tackling bugs, unexpected behavior, or broken features.
 disable-model-invocation: true
+metadata:
+  author: lawrips
+  version: 1.2.0
 ---
 
 # Debugging
