@@ -1,6 +1,9 @@
 ---
 name: css-architecture
 description: CSS token system and semantic styling patterns. Use when creating styles, theming, or fixing styling inconsistencies.
+metadata:
+  author: lawrips
+  version: 1.2.0
 ---
 
 # CSS Architecture & Design Systems Skill
