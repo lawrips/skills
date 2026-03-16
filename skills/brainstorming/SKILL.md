@@ -1,7 +1,10 @@
 ---
 name: brainstorming
-description: "Customer centric design refinement through step by step Q&A to help explore intent, express ideas, and identify solutions for user problems"
+description: "Turn ideas into designs through step-by-step Q&A. Use when user says 'brainstorm', 'help me think through', 'I have an idea', 'let's design this', or wants to explore what to build before building it."
 disable-model-invocation: true
+metadata:
+  author: lawrips
+  version: 1.2.0
 ---
 
 # Brainstorming Ideas Into Designs
