@@ -1,6 +1,8 @@
 # Skills
 
-Personal Claude Code skills and agents collection - sharing what has worked for me. Use at own risk.
+Personal Claude Code skills and agents collection - sharing what has worked for me. As written, this is becoming increasingly coupled to my workflow but everything can be independently modified. 
+
+Use at own risk.
 
 ## Installation
 
@@ -12,7 +14,7 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 ## Prerequisites
 
 **[tkt](https://github.com/lawrips/tkt)** — ticket management CLI. Several skills and agents are tightly integrated with tkt and won't work as expected without it:
-- **Skills:** `create-tickets`
+- **Skills:** `create-tickets`, `orchestration`
 - **Agents:** `plan-reviewer`, `code-reviewer`
 
 **[Claude Code LSP](https://docs.anthropic.com/en/docs/claude-code/lsp)** (recommended) — all agents prefer LSP over Grep/Read for code navigation. Not required, but install language servers for your project's languages for faster, more precise code exploration. Agents fall back to Grep/Glob automatically.
@@ -26,6 +28,7 @@ Personal Claude Code skills and agents collection - sharing what has worked for 
 | **create-tickets** | Convert designs into tkt epics and tasks |
 | **css-architecture** | CSS token system and semantic styling patterns |
 | **docker-dev-setup** | Isolated Docker dev environment with security hardening |
+| **orchestration** | Plan execution of multiple tickets — assesses work, guides key decisions, creates an orchestration ticket that an agent follows autonomously |
 
 ## Agents
 
@@ -56,22 +59,29 @@ For large items like epics I do something similar to the following flow.
                    │ tickets
                    ▼
           ┌──────────────────┐
-  agent   │  plan-reviewer   │
+  skill   │  orchestration   │  ← plans execution, creates exec spec
           └────────┬─────────┘
-                   │ ticket notes
+                   │ orchestration ticket
+                   ▼
+     ┌─────────────────────────────┐
+     │  orchestrator (new session) │  ← reads exec spec, runs the show
+     │                             │
+     │  ┌───────────────────────┐  │
+     │  │  plan-reviewer (opt)  │  │  ← validates designs before coding
+     │  └───────────┬───────────┘  │
+     │              ▼              │
+     │  ┌───────────────────────┐  │
+     │  │  surgical-coder × N   │  │  ← one per ticket, background
+     │  └───────────┬───────────┘  │
+     │              ▼              │
+     │  ┌───────────────────────┐  │
+     │  │  code-reviewer (opt)  │  │  ← reviews all changes at end
+     │  └───────────────────────┘  │
+     └─────────────┬───────────────┘
+                   │ commits + progress notes
                    ▼
           ┌──────────────────┐
-  agent   │  surgical-coder  │
-          └────────┬─────────┘
-                   │ code
-                   ▼
-          ┌──────────────────┐
-  agent   │  code-reviewer   │
-          └────────┬─────────┘
-                   │ review notes
-                   ▼
-          ┌──────────────────┐
-    tkt   │ commit & close   │
+    tkt   │  review & close  │
           └──────────────────┘
 ```
 
@@ -89,5 +99,5 @@ MIT
 
 ## Inspiration 
 
-Thank you to obra, pprice, smacbeth, wedow
+Thank you to obra, pprice, smacbeth, wedow for the early and ongoing inspiration
 

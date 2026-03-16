@@ -4,7 +4,7 @@ description: "Turn ideas into designs through step-by-step Q&A. Use when user sa
 disable-model-invocation: true
 metadata:
   author: lawrips
-  version: 1.2.0
+  version: 1.3.0
 ---
 
 # Brainstorming Ideas Into Designs
