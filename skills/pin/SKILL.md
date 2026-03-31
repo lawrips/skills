@@ -122,18 +122,12 @@ Use the chosen package manager from Step 1 to determine the correct commands. Re
 
 **Note:** `--ignore-scripts` may break projects that rely on postinstall steps (e.g. husky, node-gyp, prisma, esbuild native binaries). The final verification step will catch this — flag it to the operator if the build fails.
 
-### Project-level config file
-Check if the project has a PM config file that enforces `--ignore-scripts` by default for all developers, not just Claude:
-- npm: `.npmrc` with `ignore-scripts=true`
-- bun: `bunfig.toml` with `[install] ignore-scripts = true`
-- pnpm: `.npmrc` with `ignore-scripts=true`
-
-If the file doesn't exist or doesn't have the setting, offer to create/update it. This ensures `--ignore-scripts` is the default for anyone working on the project — not dependent on remembering to pass the flag.
-
 Scan all build/deploy locations (already identified in Step 1a) and flag THREE types of issues:
 
 ### Wrong package manager
-If the operator chose to standardize in Step 1c, flag any command using the wrong PM. Example: project standardized on bun but `Dockerfile.dev` uses `npm ci` → flag and recommend `bun install --frozen-lockfile --ignore-scripts`.
+If the operator chose to standardize in Step 1c, flag any **package management command** using the wrong PM — install commands, lockfile references, runner commands. Example: `npm ci` in a CI config → should be `bun install --frozen-lockfile --ignore-scripts`.
+
+**Runtime and container changes are a separate concern.** Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), runtime CMD entries, and similar changes are NOT package management hygiene — they are runtime migration. Present these as **optional recommendations** in a separate section, not as required fixes.
 
 ### Unsafe install commands
 Flag any install command that:
@@ -163,6 +157,15 @@ Runner commands need special care. If the target package is already declared in 
 4. **Wrong runner for the chosen PM?** Flag it (e.g. `npx` when the project uses bun → should be `bunx`).
 
 Present findings and offer to fix.
+
+### Additional migration/policy changes (not hygiene failures)
+
+If the operator chose to standardize on a PM in Step 1c, these changes are a different class from the required fixes above. Present them in a separate section so the operator can see what is required for hygiene vs what may also be needed to complete the PM migration in this repo, and offer to apply them:
+
+- **Runtime/container migration** — Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), CMD entries, and similar runtime changes. These may be needed for the PM switch to work end-to-end in this repo, but carry more breakage risk than PM hygiene fixes.
+- **Project-level PM config** — `.npmrc` with `ignore-scripts=true` or `bunfig.toml` with `[install] ignore-scripts = true`. Enforces `--ignore-scripts` for all developers, not just Claude.
+
+Do not mark these as FAIL. Present them as additional migration/policy changes and let the operator choose whether to apply them alongside the required fixes.
 
 ---
 
@@ -233,11 +236,18 @@ Pin audit complete:
 - Package versions: X pinned, Y need fixing
 - Lockfile: <status>
 - Build scripts: X clean, Y need fixing
+- Additional migration/policy changes: X may be needed to complete PM standardization in this repo
 - Secret files: X protected, Y need fixing
 - Project CLAUDE.md: <status>
 ```
 
-Offer to fix all issues at once or one at a time. After applying fixes, recommend the operator run the chosen PM's locked install command to verify the pinned versions resolve cleanly:
+Then ask whether the operator wants to apply:
+
+- only the required hygiene fixes
+- the required hygiene fixes plus the additional migration changes needed to complete PM standardization
+- one group at a time
+
+After applying fixes, recommend the operator run the chosen PM's locked install command to verify the pinned versions resolve cleanly:
 
 - npm: `npm ci`
 - bun: `bun install --frozen-lockfile`
