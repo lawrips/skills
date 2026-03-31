@@ -127,7 +127,7 @@ Scan all build/deploy locations (already identified in Step 1a) and flag THREE t
 ### Wrong package manager
 If the operator chose to standardize in Step 1c, flag any **package management command** using the wrong PM — install commands, lockfile references, runner commands. Example: `npm ci` in a CI config → should be `bun install --frozen-lockfile --ignore-scripts`.
 
-**Runtime and container changes are a separate concern.** Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), runtime CMD entries, and similar changes are NOT package management hygiene — they are runtime migration. Present these as **optional recommendations** in a separate section, not as required fixes.
+**Runtime and container changes are a separate concern.** Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), runtime CMD entries, and similar changes are NOT package management hygiene — they are runtime migration. Present these as additional migration/policy changes in a separate section, not as required fixes.
 
 ### Unsafe install commands
 Flag any install command that:
@@ -158,14 +158,28 @@ Runner commands need special care. If the target package is already declared in 
 
 Present findings and offer to fix.
 
-### Additional migration/policy changes (not hygiene failures)
+### Project-wide PM hardening (recommended, not required)
 
-If the operator chose to standardize on a PM in Step 1c, these changes are a different class from the required fixes above. Present them in a separate section so the operator can see what is required for hygiene vs what may also be needed to complete the PM migration in this repo, and offer to apply them:
+These are explicit checks — verify each one and report pass/fail. They are categorized as **recommended** in the summary, not required hygiene fixes.
 
-- **Runtime/container migration** — Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), CMD entries, and similar runtime changes. These may be needed for the PM switch to work end-to-end in this repo, but carry more breakage risk than PM hygiene fixes.
-- **Project-level PM config** — `.npmrc` with `ignore-scripts=true` or `bunfig.toml` with `[install] ignore-scripts = true`. Enforces `--ignore-scripts` for all developers, not just Claude.
+**Secret handling exception for project-root `.npmrc`:** it is allowed to probe the project-root `.npmrc` for the exact keys `ignore-scripts` and `min-release-age` using an anchored search that only returns matching lines. Do not print or inspect any other `.npmrc` content, and do not read user-level or global `.npmrc` files.
 
-Do not mark these as FAIL. Present them as additional migration/policy changes and let the operator choose whether to apply them alongside the required fixes.
+| # | Check | How to verify | If missing |
+|---|-------|--------------|------------|
+| 1 | Project-root `.npmrc` exists with `ignore-scripts=true` | Use an anchored search on the project-root `.npmrc` for `ignore-scripts=true`. For npm projects, `npm config get ignore-scripts --location=project` also works. Do NOT accept `bunfig.toml` `ignoreScripts` as a substitute — it is undocumented. The official approach for both npm and bun is `.npmrc`. | Create/update the project-root `.npmrc` with `ignore-scripts=true`. This enforces `--ignore-scripts` project-wide for all developers, not just Claude. Works for both npm and bun projects (bun reads `.npmrc`). |
+| 2 | `minimumReleaseAge` is configured | For bun: check `bunfig.toml` for `minimumReleaseAge` under `[install]`. For npm: run `npm config get min-release-age --location=project`. | Recommend adding. Bun: `bunfig.toml` with `[install] minimumReleaseAge = 604800` (7 days in seconds). Exclusions via `minimumReleaseAgeExcludes`. npm: project-root `.npmrc` with `min-release-age=7` (7 days). Requires npm `11.10.0+` — if older, note the upgrade requirement. |
+
+Present findings as a pass/fail table alongside the other Step 4 findings, but mark them as **(recommended)** so the operator knows they are hardening, not required fixes.
+
+If `bunfig.toml` contains `ignoreScripts` but the project-root `.npmrc` does not contain `ignore-scripts=true`, Check 1 is still MISSING. Do not upgrade it to PASS based on `bunfig.toml` alone.
+
+### Additional migration changes (if standardizing PM)
+
+If the operator chose to standardize on a PM in Step 1c, these runtime changes may also be needed for the PM switch to work end-to-end in this repo. Present them in a separate section — they carry more breakage risk than PM hygiene fixes and are not required for supply-chain hygiene:
+
+- **Runtime/container migration** — Dockerfile base images (`FROM node:20-alpine` → `FROM oven/bun:1-alpine`), CMD entries, and similar runtime changes.
+
+Do not mark these as FAIL. Present them as additional migration changes and let the operator choose whether to apply them alongside the required fixes.
 
 ---
 
@@ -236,7 +250,8 @@ Pin audit complete:
 - Package versions: X pinned, Y need fixing
 - Lockfile: <status>
 - Build scripts: X clean, Y need fixing
-- Additional migration/policy changes: X may be needed to complete PM standardization in this repo
+- PM hardening (recommended): .npmrc ignore-scripts <status>, minimumReleaseAge <status>
+- Additional migration changes: X may be needed to complete PM standardization in this repo
 - Secret files: X protected, Y need fixing
 - Project CLAUDE.md: <status>
 ```
@@ -244,7 +259,7 @@ Pin audit complete:
 Then ask whether the operator wants to apply:
 
 - only the required hygiene fixes
-- the required hygiene fixes plus the additional migration changes needed to complete PM standardization
+- the required hygiene fixes plus any additional migration/policy changes
 - one group at a time
 
 After applying fixes, recommend the operator run the chosen PM's locked install command to verify the pinned versions resolve cleanly:
