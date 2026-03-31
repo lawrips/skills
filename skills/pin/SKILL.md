@@ -1,6 +1,6 @@
 ---
 name: pin
-description: Audit and lock down a project's supply chain. Pins package versions, ensures lockfiles are committed, flags secret files, and hardens build scripts. Use when setting up a new project, onboarding a repo, or after a dependency scare.
+description: Baseline supply-chain hygiene audit. Pins direct package versions, ensures lockfiles are committed, flags secret files, and audits build scripts for safer package-manager usage. Use when setting up a new project, onboarding a repo, or after a dependency scare.
 disable-model-invocation: true
 compatibility: Node.js / Bun projects. Claude Code only.
 metadata:
@@ -10,7 +10,18 @@ metadata:
 
 # Pin
 
-You are auditing a project's supply chain hygiene. Work through each check in order, report findings as you go, and offer to fix each issue. Do not read the contents of any file that may contain secrets.
+You are performing a baseline supply-chain hygiene audit. Work through each check in order, report findings as you go, and offer to fix each issue. Do not read the contents of any file that may contain secrets.
+
+## DISCLAIMER
+
+This skill is a **baseline supply-chain hygiene audit**, not a comprehensive security review.
+
+- Do **NOT** tell the operator that the project is "secure," "safe," or "locked down" just because this skill passes.
+- A clean result means the repo is better pinned, more consistent, and less likely to drift or execute undeclared tooling by accident.
+- A clean result does **NOT** mean the dependency graph is trustworthy, vulnerability-free, or safe from compromise.
+- This skill does **NOT** evaluate transitive dependencies, maintainer trust, package provenance, signed releases, registry compromise, CI isolation, or whether a package is malicious.
+- This skill does **NOT** replace deeper follow-up work such as vulnerability scanning, package trust review, or a manual dependency audit.
+- Treat every recommendation as a proposed hygiene fix, not a guarantee.
 
 ## Principles
 
@@ -72,14 +83,14 @@ If the operator chooses to standardize, flag the wrong PM's lockfile for removal
 
 ## Step 2: Audit Package Versions
 
-Scan `package.json` for unpinned versions in `dependencies` and `devDependencies`. Flag any version that starts with `^`, `~`, `>=`, `>`, `*`, or `latest`.
+Scan every `package.json` in the project (root and nested packages/workspaces) for unpinned versions in `dependencies` and `devDependencies`. Flag any version that starts with `^`, `~`, `>=`, `>`, `*`, or `latest`.
 
 Present findings as a table:
 
-| Package | Current | Issue |
-|---------|---------|-------|
-| axios | ^1.14.0 | Range — pins to 1.14.0 |
-| lodash | ~4.17.0 | Range — pins to 4.17.0 |
+| Location | Package | Current | Issue |
+|----------|---------|---------|-------|
+| package.json | axios | ^1.14.0 | Range — pins to 1.14.0 |
+| apps/web/package.json | lodash | ~4.17.0 | Range — pins to 4.17.0 |
 
 To determine the correct pinned version, check the lockfile for the currently resolved version. If the lockfile doesn't exist yet (new project), fall back to `npm view <pkg> version` to get the current latest (this works regardless of which PM the project uses). Offer to fix all at once.
 
@@ -91,7 +102,7 @@ Four checks for the chosen PM's lockfile:
 
 1. **Lockfile exists** — does the lockfile for the chosen package manager exist? For bun, check both `bun.lock` and `bun.lockb` — if both exist, flag the old format (`bun.lockb`) for removal.
 2. **Lockfile is tracked by git** — run `git ls-files <lockfile>` to verify it's committed, not just present on disk
-3. **Lockfile not gitignored** — scan `.gitignore` for the lockfile name. If the lockfile IS listed in `.gitignore`, flag it as a FAIL — lockfiles must be committed
+3. **Lockfile not gitignored** — use `git check-ignore -v <lockfile>` to verify whether the lockfile is actually ignored. Do not rely on scanning `.gitignore` text. If the lockfile is ignored, flag it as a FAIL — lockfiles must be committed
 4. **Wrong-PM lockfiles** — if the operator chose to standardize in Step 1c, flag any lockfiles from the other PM for removal (e.g. project chose bun → flag `package-lock.json` for deletion)
 
 Report pass/fail for each. Offer to fix .gitignore if the lockfile is ignored, and offer to delete wrong-PM lockfiles.
@@ -131,19 +142,25 @@ Flag any install command that:
 
 ### Runner commands (`bunx` / `npx`)
 
-**CRITICAL: `bunx foo` and `bunx foo@version` have DIFFERENT behavior.** Without a version, `bunx`/`npx` resolves the binary locally from `node_modules/.bin`. With `@version`, it downloads from the npm registry. This means adding a version pin can *introduce* risk rather than reduce it.
+Runner commands need special care. If the target package is already declared in the project, the safest approach is usually to rely on that declared dependency rather than introducing a separate version pin in the runner command. If the target package is not declared locally, an unpinned runner command may fetch and execute code outside the lockfile.
 
 **Decision tree for each runner command:**
 
-1. **Is the package already a local dependency** (in `package.json` + lockfile)? → **Do NOT add `@version`.** The version is already pinned in `package.json`. The runner resolves locally. Leave it alone.
+1. **Is the tool already declared as a dependency/devDependency** in the relevant `package.json` and present in the lockfile?
+   - Yes → treat it as locally pinned. **Do NOT add `@version`** to the runner command.
+   - Also flag the command if it uses the wrong runner for the chosen PM.
 
-2. **Is the package NOT a local dependency?** → Pin it. But first:
-   - Find the real package name — the binary name may differ from the package name (e.g. binary `opennextjs-cloudflare` is provided by package `@opennextjs/cloudflare`). Check `node_modules/.bin/<binary>` or search `package.json`.
-   - Always use the scoped package name (`bunx @scope/package@version`), never the unscoped binary name — unscoped names may be squatter packages on npm.
-   - Get the version from the registry (`npm view <package> version`).
-   - Verify the package@version exists before recommending it.
+2. **Is the tool NOT declared locally?**
+   - Flag it for review.
+   - Preferred fix: add the package as a devDependency with an exact version, then invoke it through the project's normal scripts/tooling.
+   - Acceptable fallback: pin the exact package name and version in the runner command if adding a dependency is not appropriate.
 
-3. **Wrong runner for the chosen PM?** Flag it (e.g. `npx` when the project uses bun → should be `bunx`).
+3. **Does the binary name differ from the package name?**
+   - Verify the actual package name before recommending a change.
+   - Do not assume the binary name is the npm package name, especially for scoped packages.
+   - Always use the real scoped package name (`bunx @scope/package@version`), never guess from the binary name alone.
+
+4. **Wrong runner for the chosen PM?** Flag it (e.g. `npx` when the project uses bun → should be `bunx`).
 
 Present findings and offer to fix.
 
@@ -166,17 +183,17 @@ credentials*, *secret*, *token*
 You MUST actually search the filesystem — do not just check `.gitignore` and assume. A file can exist on disk without being in `.gitignore`, or be in `.gitignore` but not in `permissions.deny`.
 
 For each file found on disk, check TWO things:
-1. **Is it in .gitignore?** — if not, flag as FAIL
+1. **Is it ignored by git?** — use `git check-ignore -v <path>`. If not ignored, flag as FAIL
 2. **Is it in `.claude/settings.local.json` permissions.deny?** — if not, flag as FAIL (needs Read/Write/Edit deny triple)
 
 Present findings as a table:
 
-| File | In .gitignore | In permissions.deny |
-|------|--------------|-------------------|
+| File | Ignored by git | In permissions.deny |
+|------|----------------|-------------------|
 | .env | ✓ | ✗ — needs adding |
 | .dev.vars | ✓ | ✓ |
 
-Offer to fix both `.gitignore` and `.claude/settings.local.json`. When adding to `settings.local.json`, use the deny triple pattern:
+Offer to fix both git ignore rules (for example in `.gitignore`) and `.claude/settings.local.json`. When adding to `settings.local.json`, use the deny triple pattern:
 
 ```json
 "Read(<path>)", "Write(<path>)", "Edit(<path>)"
@@ -201,6 +218,16 @@ Do not overwrite existing content — append a new section if the file already e
 
 After all checks, present a summary:
 
+First, frame the result accurately:
+
+```
+This was a baseline supply-chain hygiene audit, not a comprehensive security review.
+A clean result means the repo is better pinned, more consistent, and less likely to drift or execute undeclared tooling.
+It does NOT mean the dependency graph is trustworthy, vulnerability-free, or safe from compromise.
+```
+
+Then present the summary:
+
 ```
 Pin audit complete:
 - Package versions: X pinned, Y need fixing
@@ -210,9 +237,14 @@ Pin audit complete:
 - Project CLAUDE.md: <status>
 ```
 
-Offer to fix all issues at once or one at a time. After applying fixes, recommend the operator run `<pm> install --frozen-lockfile` (using the chosen PM) to verify the pinned versions resolve cleanly.
+Offer to fix all issues at once or one at a time. After applying fixes, recommend the operator run the chosen PM's locked install command to verify the pinned versions resolve cleanly:
 
-Optionally, suggest a vulnerability audit as a separate follow-up — `npm audit` for npm projects, or a third-party tool like `snyk` or `osv-scanner` for bun/pnpm projects (bun has no built-in audit command). This checks if any pinned versions have known CVEs, which is a different concern from supply chain pinning.
+- npm: `npm ci`
+- bun: `bun install --frozen-lockfile`
+- pnpm: `pnpm install --frozen-lockfile`
+- yarn: `yarn install --frozen-lockfile`
+
+If the operator wants deeper assurance, suggest separate follow-up work such as vulnerability scanning — `npm audit` for npm projects, or a third-party tool like `snyk` or `osv-scanner` for bun/pnpm projects (bun has no built-in audit command). Make clear that this is different from pinning and lockfile hygiene.
 
 ---
 
