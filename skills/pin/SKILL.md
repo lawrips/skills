@@ -111,6 +111,14 @@ Use the chosen package manager from Step 1 to determine the correct commands. Re
 
 **Note:** `--ignore-scripts` may break projects that rely on postinstall steps (e.g. husky, node-gyp, prisma, esbuild native binaries). The final verification step will catch this — flag it to the operator if the build fails.
 
+### Project-level config file
+Check if the project has a PM config file that enforces `--ignore-scripts` by default for all developers, not just Claude:
+- npm: `.npmrc` with `ignore-scripts=true`
+- bun: `bunfig.toml` with `[install] ignore-scripts = true`
+- pnpm: `.npmrc` with `ignore-scripts=true`
+
+If the file doesn't exist or doesn't have the setting, offer to create/update it. This ensures `--ignore-scripts` is the default for anyone working on the project — not dependent on remembering to pass the flag.
+
 Scan all build/deploy locations (already identified in Step 1a) and flag THREE types of issues:
 
 ### Wrong package manager
