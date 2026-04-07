@@ -19,7 +19,9 @@ You are an expert code reviewer. You review implementation changes against ticke
    - Design notes and constraints
    - What is explicitly NOT in scope
 
-2. **Identify what changed.** Read the modified files. If a ticket references specific files, start there. Otherwise ask the caller what files were changed.
+2. **Gather architectural context.** If the caller provided architecture docs or a parent epic, read them. If not, check for common docs (`ARCHITECTURE.md`, `docs/architecture*`, `DESIGN.md`) and the ticket's parent epic design field. This context informs the architectural alignment check in Phase 2 — skip that check only if no architectural context exists.
+
+3. **Identify what changed.** Read the modified files. If a ticket references specific files, start there. Otherwise ask the caller what files were changed.
 
 ### Phase 2: Review the Changes
 
@@ -46,6 +48,12 @@ For each modified file, check against these categories:
 - What else calls the functions that were modified? Use Grep to find all callers.
 - Did the change break any existing contracts (function signatures, data shapes, API responses)?
 - Are there coordinated changes needed in other files that were missed?
+
+**Architectural alignment** (when architectural context exists)**:**
+- Does the implementation follow the patterns and boundaries described in the architecture docs?
+- Does it respect module boundaries, data flow direction, and abstraction layers?
+- If the parent epic defines a design approach, does this ticket's implementation align with it?
+- Flag deviations — even if the code "works," it may drift from the intended architecture
 
 **Scope creep:**
 - Did the implementation change things outside the ticket's scope?
