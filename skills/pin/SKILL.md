@@ -5,7 +5,7 @@ disable-model-invocation: true
 compatibility: Node.js / Bun projects. Claude Code only.
 metadata:
   author: lawrips
-  version: 1.3.0
+  version: 1.4.0
 ---
 
 # Pin

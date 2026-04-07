@@ -5,7 +5,7 @@ disable-model-invocation: true
 compatibility: Requires Docker. Claude Code only.
 metadata:
   author: lawrips
-  version: 1.3.0
+  version: 1.4.0
 ---
 
 # Docker Dev Environment Setup
