@@ -29,6 +29,7 @@ Use at own risk.
 | **css-architecture** | CSS token system and semantic styling patterns |
 | **docker-dev-setup** | Isolated Docker dev environment with security hardening |
 | **orchestration** | Plan execution of multiple tickets — assesses work, guides key decisions, creates an orchestration ticket that an agent follows autonomously |
+| **pin** | Baseline supply-chain hygiene audit — pins package versions, verifies lockfiles, flags secret files, and audits build scripts |
 
 ## Agents
 
@@ -92,6 +93,7 @@ For large items like epics I do something similar to the following flow.
 | **investigate** | Debugging a bug — load it to reset Claude's approach |
 | **css-architecture** | Major styling work — load conventions for the session |
 | **docker-dev-setup** | Setting up containerized dev environment from scratch |
+| **pin** | New project, repo onboarding, or post-dependency-scare hygiene pass |
 
 ## License
 
