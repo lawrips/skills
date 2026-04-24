@@ -164,14 +164,34 @@ These are explicit checks — verify each one and report pass/fail. They are cat
 
 **Secret handling exception for project-root `.npmrc`:** it is allowed to probe the project-root `.npmrc` for the exact keys `ignore-scripts` and `min-release-age` using an anchored search that only returns matching lines. Do not print or inspect any other `.npmrc` content, and do not read user-level or global `.npmrc` files.
 
+Apply PM hardening per install root, not per every `package.json`. A directory is an install root only if it has the chosen PM lockfile, runs install commands from that directory, or docs/CI/Docker clearly treat it as an install location. If a nested `package.json` is only a tooling manifest inside a native/mobile wrapper, audit its versions but do not add `.npmrc`, `bunfig.toml`, lockfiles, or scanner devDependencies there.
+
 | # | Check | How to verify | If missing |
 |---|-------|--------------|------------|
 | 1 | Project-root `.npmrc` exists with `ignore-scripts=true` | Use an anchored search on the project-root `.npmrc` for `ignore-scripts=true`. For npm projects, `npm config get ignore-scripts --location=project` also works. Do NOT accept `bunfig.toml` `ignoreScripts` as a substitute — it is undocumented. The official approach for both npm and bun is `.npmrc`. | Create/update the project-root `.npmrc` with `ignore-scripts=true`. This enforces `--ignore-scripts` project-wide for all developers, not just Claude. Works for both npm and bun projects (bun reads `.npmrc`). |
 | 2 | `minimumReleaseAge` is configured | For bun: check `bunfig.toml` for `minimumReleaseAge` under `[install]`. For npm: run `npm config get min-release-age --location=project`. | Recommend adding. Bun: `bunfig.toml` with `[install] minimumReleaseAge = 604800` (7 days in seconds). Exclusions via `minimumReleaseAgeExcludes`. npm: project-root `.npmrc` with `min-release-age=7` (7 days). Requires npm `11.10.0+` — if older, note the upgrade requirement. |
+| 3 | Bun install-time security scanner is configured | Bun projects only. Check each Bun install root's `package.json` devDependencies for exact-pinned `@socketsecurity/bun-security-scanner`, and check that same root's `bunfig.toml` for `[install.security] scanner = "@socketsecurity/bun-security-scanner"`. | Recommend adding `@socketsecurity/bun-security-scanner` as an exact devDependency in each Bun install root and configuring Bun's security scanner in that root's `bunfig.toml`. This is an install-time package scanner via Bun's Security Scanner API, not Socket Firewall. It checks packages during `bun add` / `bun install` before installation and can block fatal advisories. |
 
 Present findings as a pass/fail table alongside the other Step 4 findings, but mark them as **(recommended)** so the operator knows they are hardening, not required fixes.
 
 If `bunfig.toml` contains `ignoreScripts` but the project-root `.npmrc` does not contain `ignore-scripts=true`, Check 1 is still MISSING. Do not upgrade it to PASS based on `bunfig.toml` alone.
+
+For Bun projects, apply Check 3 per project root, not globally. The scanner has been verified to work as a project devDependency with `bun install --frozen-lockfile --ignore-scripts`, so keep it pinned and committed with the project.
+
+When applying Check 3 from the relevant Bun project root, use:
+
+```bash
+bun add -d --exact --ignore-scripts @socketsecurity/bun-security-scanner
+```
+
+Then add or update `bunfig.toml`:
+
+```toml
+[install.security]
+scanner = "@socketsecurity/bun-security-scanner"
+```
+
+If `bunfig.toml` already has `[install]` settings such as `minimumReleaseAge`, preserve them and add `[install.security]` as a separate table. After applying this hardening, verify with `bun install --frozen-lockfile --ignore-scripts`.
 
 ### Additional migration changes (if standardizing PM)
 
@@ -250,7 +270,7 @@ Pin audit complete:
 - Package versions: X pinned, Y need fixing
 - Lockfile: <status>
 - Build scripts: X clean, Y need fixing
-- PM hardening (recommended): .npmrc ignore-scripts <status>, minimumReleaseAge <status>
+- PM hardening (recommended): .npmrc ignore-scripts <status>, minimumReleaseAge <status>, Bun security scanner <status if bun>
 - Additional migration changes: X may be needed to complete PM standardization in this repo
 - Secret files: X protected, Y need fixing
 - Project CLAUDE.md: <status>
@@ -265,9 +285,9 @@ Then ask whether the operator wants to apply:
 After applying fixes, recommend the operator run the chosen PM's locked install command to verify the pinned versions resolve cleanly:
 
 - npm: `npm ci`
-- bun: `bun install --frozen-lockfile`
-- pnpm: `pnpm install --frozen-lockfile`
-- yarn: `yarn install --frozen-lockfile`
+- bun: `bun install --frozen-lockfile --ignore-scripts`
+- pnpm: `pnpm install --frozen-lockfile --ignore-scripts`
+- yarn: `yarn install --frozen-lockfile --ignore-scripts`
 
 If the operator wants deeper assurance, suggest separate follow-up work such as vulnerability scanning — `npm audit` for npm projects, or a third-party tool like `snyk` or `osv-scanner` for bun/pnpm projects (bun has no built-in audit command). Make clear that this is different from pinning and lockfile hygiene.
 
