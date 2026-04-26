@@ -5,6 +5,7 @@ This repo includes Codex-ready versions of:
 - `brainstorming`
 - `css-architecture`
 - `code-review`
+- `pin`
 - `plan-review`
 
 ## Recommended Install
@@ -24,6 +25,7 @@ mkdir -p ~/.codex/skills
 ln -s "$REPO/codex/skills/brainstorming" ~/.codex/skills/brainstorming
 ln -s "$REPO/codex/skills/css-architecture" ~/.codex/skills/css-architecture
 ln -s "$REPO/codex/skills/code-review" ~/.codex/skills/code-review
+ln -s "$REPO/codex/skills/pin" ~/.codex/skills/pin
 ln -s "$REPO/codex/skills/plan-review" ~/.codex/skills/plan-review
 ```
 
@@ -39,6 +41,7 @@ mkdir -p ~/.codex/skills
 cp -R "$REPO/codex/skills/brainstorming" ~/.codex/skills/
 cp -R "$REPO/codex/skills/css-architecture" ~/.codex/skills/
 cp -R "$REPO/codex/skills/code-review" ~/.codex/skills/
+cp -R "$REPO/codex/skills/pin" ~/.codex/skills/
 cp -R "$REPO/codex/skills/plan-review" ~/.codex/skills/
 ```
 
