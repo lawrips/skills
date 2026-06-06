@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Deep"
+  short_description: "Plan unattended system-health work"
+  default_prompt: "Use $godeep to find and package a long-running maintenance epic for later execution."

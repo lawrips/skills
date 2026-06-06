@@ -1,0 +1,4 @@
+interface:
+  display_name: "Execute"
+  short_description: "Run a tkt epic end to end"
+  default_prompt: "Use $execute to complete the referenced tkt epic from a clean working tree."
