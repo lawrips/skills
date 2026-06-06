@@ -7,6 +7,7 @@ This repo is primarily Claude-oriented, but it also includes Codex-ready version
 - `brainstorming`
 - `css-architecture`
 - `code-review`
+- `pin`
 - `plan-review`
 
 These live in `codex/skills/`.

@@ -4,7 +4,7 @@ description: Debugging methodology that prevents speculation and enforces discip
 disable-model-invocation: true
 metadata:
   author: lawrips
-  version: 1.4.0
+  version: 1.5.0
 ---
 
 # Debugging

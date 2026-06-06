@@ -1,8 +1,7 @@
 ---
 name: pin
 description: Baseline supply-chain hygiene audit. Pins direct package versions, ensures lockfiles are committed, flags secret files, and audits build scripts for safer package-manager usage. Use when setting up a new project, onboarding a repo, or after a dependency scare.
-disable-model-invocation: true
-compatibility: Node.js / Bun / Python projects. Claude Code only.
+compatibility: Node.js / Bun / Python projects. Codex only.
 metadata:
   author: lawrips
   version: 1.5.0
@@ -25,7 +24,7 @@ This skill is a **baseline supply-chain hygiene audit**, not a comprehensive sec
 
 ## Principles
 
-- **Scan, don't read secrets.** Use `ls`, `find`, and `git ls-files` to detect secret files. Never `cat` or `Read` their contents.
+- **Scan, don't read secrets.** Use `ls`, `find`, and `git ls-files` to detect secret files. Never `cat`, open, or read their contents.
 - **Report before fixing.** Present all findings first, then offer to fix. Don't silently change anything.
 - **Respect the project's package manager.** Ask the operator which package manager the project uses and tailor all recommendations accordingly.
 - **Load only the relevant ecosystem reference.** After Step 1, use `references/node.md` for Node/Bun projects and `references/python.md` for Python projects. If both ecosystems are present, use both.
@@ -93,7 +92,7 @@ After Step 1b, load the relevant reference:
 If multiple package managers are detected within the same ecosystem, stop and ask the operator:
 
 1. **Standardize on one** — which one? The skill will flag all commands using the wrong PM and offer to migrate them.
-2. **Keep mixed** — the skill audits each detected PM but notes the risk (Claude may use the wrong one, lockfiles may drift out of sync).
+2. **Keep mixed** — the skill audits each detected PM but notes the risk (Codex may use the wrong one, lockfiles may drift out of sync).
 
 Wait for the answer before proceeding. The chosen PM determines the correct commands for Steps 2–6.
 
@@ -190,30 +189,26 @@ credentials*, *secret*, *token*
 .vscode/launch.json
 ```
 
-You MUST actually search the filesystem — do not just check `.gitignore` and assume. A file can exist on disk without being in `.gitignore`, or be in `.gitignore` but not in `permissions.deny`.
+You MUST actually search the filesystem — do not just check `.gitignore` and assume. A file can exist on disk without being in `.gitignore`, or be in `.gitignore` but not covered by Codex project instructions.
 
 For each file found on disk, check TWO things:
 1. **Is it ignored by git?** — use `git check-ignore -v <path>`. If not ignored, flag as FAIL
-2. **Is it in `.claude/settings.local.json` permissions.deny?** — if not, flag as FAIL (needs Read/Write/Edit deny triple)
+2. **Is it covered by `AGENTS.md` secret-handling instructions?** — if not, flag as FAIL
 
 Present findings as a table:
 
-| File | Ignored by git | In permissions.deny |
-|------|----------------|-------------------|
+| File | Ignored by git | In AGENTS.md secret-handling instructions |
+|------|----------------|-------------------------------------------|
 | .env | ✓ | ✗ — needs adding |
 | .dev.vars | ✓ | ✓ |
 
-Offer to fix both git ignore rules (for example in `.gitignore`) and `.claude/settings.local.json`. When adding to `settings.local.json`, use the deny triple pattern:
-
-```json
-"Read(<path>)", "Write(<path>)", "Edit(<path>)"
-```
+Offer to fix both git ignore rules (for example in `.gitignore`) and `AGENTS.md`.
 
 ---
 
-## Step 6: Audit Project CLAUDE.md
+## Step 6: Audit Project AGENTS.md
 
-Check if the project has a `CLAUDE.md` file at the project root. If it exists, scan for supply chain and safety reminders. If missing or incomplete, offer to add:
+Check if the project has an `AGENTS.md` file at the project root. If it exists, scan for supply chain and safety reminders. If missing or incomplete, offer to add:
 
 - Package manager preference (e.g. "This project uses bun. Never use npm." or "This project uses uv. Never use pip directly." — based on the operator's choice in Step 1)
 - Supply chain safety (locked install commands, exact pins, install hardening, lockfile commitment)
@@ -247,7 +242,7 @@ Pin audit complete:
 - PM hardening (recommended): <status from ecosystem reference>
 - Additional migration changes: X may be needed to complete PM standardization in this repo
 - Secret files: X protected, Y need fixing
-- Project CLAUDE.md: <status>
+- Project AGENTS.md: <status>
 ```
 
 Then ask whether the operator wants to apply:
@@ -267,4 +262,4 @@ If the operator wants deeper assurance, suggest separate follow-up work such as 
 - **Never read secret file contents.** Detection is by filename only.
 - **Always report before fixing.** The operator decides what to change.
 - **Be specific about what changes.** Show the exact edit before making it.
-- **This is a point-in-time audit.** Ongoing enforcement comes from hooks (bash-guard.sh, tkt-remind.sh) and permissions (settings.json). This skill sets up the project; hooks maintain it.
+- **This is a point-in-time audit.** Ongoing enforcement comes from hooks (bash-guard.sh, tkt-remind.sh) and project instructions (AGENTS.md). This skill sets up the project; hooks maintain it.

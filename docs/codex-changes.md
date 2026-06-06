@@ -61,6 +61,19 @@ Purpose:
 Typical invocation:
 - `$plan-review <ticket-or-plan>`
 
+### `pin`
+
+File: `~/.codex/skills/pin/SKILL.md`
+
+Purpose:
+- baseline supply-chain hygiene audit for Node/Bun and Python projects
+- checks package-manager consistency, pinned direct dependencies, lockfiles, build scripts, hardening policy, secret-file handling, and project agent guidance
+- uses ecosystem references for Node/Bun and Python details
+- frames Socket/Bun scanner support as recommended hardening, not a comprehensive security guarantee
+
+Typical invocation:
+- `$pin`
+
 ### `css-architecture`
 
 File: `~/.codex/skills/css-architecture/SKILL.md`

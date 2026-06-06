@@ -5,7 +5,7 @@ disable-model-invocation: true
 compatibility: Requires tkt CLI (https://github.com/lawrips/tkt). Claude Code only.
 metadata:
   author: lawrips
-  version: 1.4.0
+  version: 1.5.0
 ---
 
 # Creating Tickets

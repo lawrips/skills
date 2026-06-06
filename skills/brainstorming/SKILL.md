@@ -4,7 +4,7 @@ description: "Turn ideas into designs through step-by-step Q&A. Use when user sa
 disable-model-invocation: true
 metadata:
   author: lawrips
-  version: 1.4.0
+  version: 1.5.0
 ---
 
 # Brainstorming Ideas Into Designs
@@ -52,4 +52,3 @@ Start by understanding the current project context, then ask questions one at a 
 
 - Ask: "Ready to set up for implementation?"
 - Use skills:create-tickets to create epic/tasks with the design.
-
